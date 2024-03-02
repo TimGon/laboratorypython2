@@ -8,7 +8,6 @@
 Выводит на экран цифры числа, исключая семерки.
 Вычисляется среднее число между минимальным и максимальным и выводится прописью.
 """
-
 import re
 
 digit_to_word = {'0': 'ноль', '1': 'один', '2': 'два', '3': 'три', '4': 'четыре', '5': 'пять', '6': 'шесть',
@@ -19,14 +18,12 @@ num_filtered = []
 
 with open("input.txt", "r", encoding="utf-8") as file:
     content = file.read()
-
-    numbers = re.findall(r'-?\d+', content)
-
+    numbers = re.findall(r'(?<![\d.])-?[0-7]*7[0-7](?![\d.])', content)
     if not numbers:
         print("\nВ файле input.txt нет чисел")
     else:
         for num in numbers:
-            if int(num) % 2 != 0 and re.match(r'^-?[0-7]*7[0-7]$', num) and len(num) < 5:
+            if int(num) % 2 != 0 and len(num) < 5:
                 num_filtered.append(int(num))
 
 if num_filtered:
