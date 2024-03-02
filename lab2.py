@@ -26,7 +26,7 @@ with open("input.txt", "r", encoding="utf-8") as file:
         print("\nВ файле input.txt нет чисел")
     else:
         for num in numbers:
-            if re.match(r'^-?[0-7]*[1357]*7[0-7]$', num) and len(num) < 5:
+            if int(num) % 2 != 0 and re.match(r'^-?[0-7]*7[0-7]$', num) and len(num) < 5:
                 num_filtered.append(int(num))
 
 if num_filtered:
