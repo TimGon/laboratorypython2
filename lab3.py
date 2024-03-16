@@ -101,14 +101,14 @@ else:
 F = [[matr_C[i % N//2][j % N//2] for j in range(N)] for i in range(N)]
 for i in range(N):
     for j in range(N):
-        if 0 <= i < 3 and 0 <= j < 3:
+        if 0 <= i < N//2 and 0 <= j < N//2:
             F[i][j] = E[i][j]
-        elif 0 <= i < 3 and 3 <= j < 6:
-            F[i][j] = matr_B[i][j - 3]
-        elif 3 <= i < 6 and 0 <= j < 3:
-            F[i][j] = D[i - 3][j]
+        elif 0 <= i < N//2 and N//2 <= j < N:
+            F[i][j] = matr_B[i][j - N//2]
+        elif N//2 <= i < N and 0 <= j < N//2:
+            F[i][j] = D[i - N//2][j]
         else:
-            F[i][j] = matr_C[i - 3][j - 3]
+            F[i][j] = matr_C[i - N//2][j - N//2]
 # Вывод результатов
 print("Матрица A:")
 for row in A:
@@ -119,15 +119,15 @@ for row in F:
     print(row)
 
 K_times_A = [[K * A[i][j] for j in range(N)] for i in range(N)]
-print("Результат выражения K * A:")
+print("\nРезультат выражения K * A:")
 for row in K_times_A:
     print(row)
 K_times_AT = [[K * A[j][i] for j in range(N)] for i in range(N)]
-print("Результат выражения K * A^T:")
+print("\nРезультат выражения K * A^T:")
 for row in K_times_AT:
     print(row)
 # Вычисление выражения ((K * A) * F) - (K * A^T)
 result_matrix = [[((K * K_times_A[i][j]) * F[i][j]) - (K * K_times_AT[i][j]) for j in range(N)] for i in range(N)]
-print("Результат выражения ((K * A) * F) - (K * A^T):")
+print("\nРезультат выражения ((K * A) * F) - (K * A^T):")
 for row in result_matrix:
     print(row)
