@@ -64,29 +64,25 @@ for i in range(len(C)):
             prime_count += np.count_nonzero(is_prime(C[i][j]))
         if i % 2 == 0:
             zero_count += np.count_nonzero(C[i][j] == 0)
-print("Количество простых чисел нечетных столбцев подматрицы С", prime_count)
-print("Количество четных строков нулевых элементов подматрицы С", zero_count)
+
 # Создаем копию матрицы A для F
 F = np.copy(A)
-print("Матрица F\n", F)
+
 # Проверяем условие и меняем матрицы B и C местами или E и C симметрично
 if prime_count > zero_count:
     F[N//2:, :N//2], F[N//2:, N//2:] = F[N//2:, N//2:], F[N//2:, :N//2]
 else:
     F[N//2:, N//2:], F[N//2:, :N//2] = F[N//2:, :N//2], F[N//2:, N//2:]
-print("\nМатрица F после преобразований:\n", F)
+
 # Проверяем условие определителя матрицы А и вычисляем выражение
 det_A = np.linalg.det(A)
 sum_diag_F = np.trace(F)
 G = np.tril(A)
 
-if det_A == 0:
-    print("Определитель матрицы A равен нулю. Вырожденная матрица, обратная матрица не может быть вычислена.")
+if det_A > sum_diag_F:
+    result = (np.linalg.inv(A) * np.transpose(A)) - (K * F)
 else:
-    if det_A > sum_diag_F:
-        result = (np.linalg.inv(A) * np.transpose(A)) - (K * F)
-    else:
-        result = ((np.linalg.inv(A) + np.linalg.inv(G)) - np.linalg.inv(F)) * K
+    result = ((np.linalg.inv(A) + np.linalg.inv(G)) - np.linalg.inv(F)) * K
 
 # Вывод результатов
 print("Матрица A:")
