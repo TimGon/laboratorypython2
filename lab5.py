@@ -45,13 +45,11 @@ while not (0 < n < 50):
 
 results_table = []
 
-cProfile.runctx('''
 for n in range(1, n + 1):
-    recursive_time = timeit.timeit('recursive_F(n)', globals=globals(), number=10) * 10
-    iterative_time = timeit.timeit('iterative_F(n)', globals=globals(), number=10) * 10
+    recursive_time = timeit.timeit('recursive_F(n)', globals=globals(), number=1) 
+    iterative_time = timeit.timeit('iterative_F(n)', globals=globals(), number=1)
 
     results_table.append((n, recursive_time, iterative_time))
-''', globals=globals(), locals=locals(), sort='cumulative')
 
 print("+-" + "-"*12 + "-+-" + "-"*12 + "-+-" + "-"*15 + "-+")
 print("| {:^14} | {:^14} | {:^17} |".format("n", "Recursive", "Iterative"))
