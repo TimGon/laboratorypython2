@@ -7,7 +7,6 @@
 
 8.	F(n<2)=1;F(n)=(-1)^n*(2F(n-1)+F(n-3))(при n четном),F(n)= 5F(n-1)/(2n)!- F(n-3)(при n нечетном)
 """
-import cProfile
 import timeit
 import matplotlib.pyplot as plt
 
