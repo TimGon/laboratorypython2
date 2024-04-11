@@ -5,37 +5,46 @@
 Результаты сравнительного исследования времени вычисления представить в табличной и графической форме в виде
 отчета по лабораторной работе.
 
-8.	F(n<2)=1;F(n)=(-1)^n*(2F(n-1)+F(n-3))(при n четном),F(n)= 5F(n-1)/(2n)!- F(n-3)(при n нечетном)
+8.	F(n<2)=1;F(n)=(-1)^n*(2F(n-1)+F(n-3))/(2n)!
 """
 import timeit
 import matplotlib.pyplot as plt
 
 
-def recursive_F(n):
+def recursive_F(n, val):
     if n < 2:
         return 1
-    return (pow(-1, n)) * ((2 * recursive_F(n - 1) + recursive_F(n - 3)) / (2 * factorial(n)))
+
+    return val * ((2 * recursive_F(n - 1, val) + recursive_F(n - 3, val)) / factorial(n))
 
 
-def iterative_F(n):
+def iterative_F(n, val):
     if n < 2:
         return 1
-    dp = [0 for i in range(n + 1)]
-    dp[0], dp[1] = 1, 1
-    for i in range(2, n + 1, 1):
-        dp[i] = pow(-1, i) * (2 * dp[i - 1] + dp[i - 3]) / factorial(n)
 
-    return dp[n]
+    prev2, prev1 = 1, 1
+    current = 0
+
+    for i in range(2, n + 1):
+        current = val * (2 * (prev1 + prev2)) / factorial(n)
+        prev2, prev1 = prev1, current
+
+    return current
 
 
 def factorial(n):
-    if n == 0:
+    if n <= 1:
         return 1
-    result = 1
-    for i in range(2, 2*n + 1, 2):
-        result *= i
 
-    return result
+    cache = [0] * (n + 1)
+    cache[0] = 1
+    cache[1] = 1
+
+    for i in range(2, n + 1):
+        cache[i] = i * cache[i - 1]
+
+    return cache[n]
+
 
 n = int(input("Введите натуральное число: "))
 while not (0 < n < 50):
@@ -43,13 +52,14 @@ while not (0 < n < 50):
     n = int(input("Введите натуральное число: "))
 
 results_table = []
-
+minus_one = ((n & 1) ^ 1) * 2 - 1
 for n in range(1, n + 1):
-    recursive_time = timeit.timeit('recursive_F(n)', globals=globals(), number=1) 
-    iterative_time = timeit.timeit('iterative_F(n)', globals=globals(), number=1)
+    recursive_time = timeit.timeit('recursive_F(n, minus_one)', globals=globals(), number=1)
+    iterative_time = timeit.timeit('iterative_F(n, minus_one)', globals=globals(), number=1)
 
     results_table.append((n, recursive_time, iterative_time))
 
+print(results_table)
 print("+-" + "-"*12 + "-+-" + "-"*12 + "-+-" + "-"*15 + "-+")
 print("| {:^14} | {:^14} | {:^17} |".format("n", "Recursive", "Iterative"))
 print("+-" + "-"*12 + "-+-" + "-"*12 + "-+-" + "-"*15 + "-+")
