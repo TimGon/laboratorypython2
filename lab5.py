@@ -8,8 +8,6 @@
 8.	F(n<2)=1;F(n)=(-1)^n*(2F(n-1)+F(n-3))/(2n)!
 """
 
-# Вариант с timeit
-
 import timeit
 import matplotlib.pyplot as plt
 
@@ -39,13 +37,13 @@ def factorial(n):
     if n <= 1:
         return 1
 
-    cache_prev, cashe_prev2 = 1, 1
-    current_cashe = 0
+    prev_cashe = 1
+    current_cashe = 1
 
     for i in range(2, n + 1):
 
-        current_cashe = i * 2*(i-1)
-        cashe_prev2, cache_prev = cache_prev, current_cashe
+        current_cashe = i * prev_cashe
+        prev_cashe = current_cashe
 
     return current_cashe
 
@@ -60,6 +58,9 @@ minus_one = int(input("Введите число -1 или 1 "))
 while not( -1 == minus_one or minus_one == 1):
     print("Это число не является 1 или -1. Повторите ввод.")
     minus_one = int(input("Введите число -1 или 1 "))
+
+print("Рекурсионное значение", recursive_F(n, minus_one),
+"Итерационная значение", iterative_F(n, minus_one))
 
 for n in range(1, n + 1):
     recursive_time = timeit.timeit('recursive_F(n, minus_one)', globals=globals(), number=1)
@@ -81,3 +82,4 @@ plt.ylabel('Время (сек.)')
 plt.title('Сравнение время между Рекурсией и Итерационным методом')
 plt.legend()
 plt.show()
+
