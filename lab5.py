@@ -38,7 +38,7 @@ def factorial(n):
         return 1
 
     prev_cashe = 1
-    current_cashe = 1
+    current_cashe = 0
 
     for i in range(2, n + 1):
 
