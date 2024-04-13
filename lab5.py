@@ -7,6 +7,9 @@
 
 8.	F(n<2)=1;F(n)=(-1)^n*(2F(n-1)+F(n-3))/(2n)!
 """
+
+# Вариант с timeit
+
 import timeit
 import matplotlib.pyplot as plt
 
@@ -15,7 +18,7 @@ def recursive_F(n, val):
     if n < 2:
         return 1
 
-    return val * ((2 * recursive_F(n - 1, val) + recursive_F(n - 3, val)) / factorial(n))
+    return (val*(-1)) * ((2 * recursive_F(n - 1, val) + recursive_F(n - 3, val)) / factorial(n))
 
 
 def iterative_F(n, val):
@@ -26,7 +29,7 @@ def iterative_F(n, val):
     current = 0
 
     for i in range(2, n + 1):
-        current = val * (2 * (prev1 + prev2)) / factorial(n)
+        current = (val *(-1)) * (2 * (prev1 + prev2)) / factorial(n)
         prev2, prev1 = prev1, current
 
     return current
@@ -36,14 +39,15 @@ def factorial(n):
     if n <= 1:
         return 1
 
-    cache = [0] * (n + 1)
-    cache[0] = 1
-    cache[1] = 1
+    cache_prev, cashe_prev2 = 1, 1
+    current_cashe = 0
 
     for i in range(2, n + 1):
-        cache[i] = i * cache[i - 1]
 
-    return cache[n]
+        current_cashe = i * 2*(i-1)
+        cashe_prev2, cache_prev = cache_prev, current_cashe
+
+    return current_cashe
 
 
 n = int(input("Введите натуральное число: "))
@@ -52,14 +56,17 @@ while not (0 < n < 50):
     n = int(input("Введите натуральное число: "))
 
 results_table = []
-minus_one = ((n & 1) ^ 1) * 2 - 1
+minus_one = int(input("Введите число -1 или 1 "))
+while not( -1 == minus_one or minus_one == 1):
+    print("Это число не является 1 или -1. Повторите ввод.")
+    minus_one = int(input("Введите число -1 или 1 "))
+
 for n in range(1, n + 1):
     recursive_time = timeit.timeit('recursive_F(n, minus_one)', globals=globals(), number=1)
     iterative_time = timeit.timeit('iterative_F(n, minus_one)', globals=globals(), number=1)
 
     results_table.append((n, recursive_time, iterative_time))
 
-print(results_table)
 print("+-" + "-"*12 + "-+-" + "-"*12 + "-+-" + "-"*15 + "-+")
 print("| {:^14} | {:^14} | {:^17} |".format("n", "Recursive", "Iterative"))
 print("+-" + "-"*12 + "-+-" + "-"*12 + "-+-" + "-"*15 + "-+")
