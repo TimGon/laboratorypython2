@@ -15,8 +15,9 @@ import matplotlib.pyplot as plt
 def recursive_F(n, val):
     if n < 2:
         return 1
+    val *= -1
 
-    return (val*(-1)) * ((2 * recursive_F(n - 1, val) + recursive_F(n - 3, val)) / factorial(n))
+    return val * (2 * (recursive_F(n - 1, val) + recursive_F(n - 3, val))) / factorial(n)
 
 
 def iterative_F(n, val):
@@ -25,25 +26,26 @@ def iterative_F(n, val):
 
     prev2, prev1 = 1, 1
     current = 0
+    val *= -1
 
     for i in range(2, n + 1):
-        current = (val *(-1)) * (2 * (prev1 + prev2)) / factorial(n)
+        current = val * (2 * (prev1 + prev2)) / factorial(n)
         prev2, prev1 = prev1, current
 
     return current
 
 
 def factorial(n):
+    global cashe_prev_fact
     if n <= 1:
         return 1
 
-    prev_cashe = 1
     current_cashe = 0
 
     for i in range(2, n + 1):
 
-        current_cashe = (2*i) * prev_cashe
-        prev_cashe = current_cashe
+        current_cashe = (2 * i) * ((2 * (i - 1)) * cashe_prev_fact)
+        cashe_prev_fact = current_cashe
 
     return current_cashe
 
@@ -55,9 +57,11 @@ while not (0 < n < 50):
 
 results_table = []
 minus_one = int(input("Введите число -1 или 1 "))
-while not( -1 == minus_one or minus_one == 1):
+while not (-1 == minus_one or minus_one == 1):
     print("Это число не является 1 или -1. Повторите ввод.")
     minus_one = int(input("Введите число -1 или 1 "))
+
+cashe_prev_fact = 2
 
 for n in range(1, n + 1):
     recursive_time = timeit.timeit('recursive_F(n, minus_one)', globals=globals(), number=1)
@@ -79,4 +83,3 @@ plt.ylabel('Время (сек.)')
 plt.title('Сравнение время между Рекурсией и Итерационным методом')
 plt.legend()
 plt.show()
-
