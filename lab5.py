@@ -59,9 +59,6 @@ while not( -1 == minus_one or minus_one == 1):
     print("Это число не является 1 или -1. Повторите ввод.")
     minus_one = int(input("Введите число -1 или 1 "))
 
-print("Рекурсионное значение", recursive_F(n, minus_one),
-"Итерационная значение", iterative_F(n, minus_one))
-
 for n in range(1, n + 1):
     recursive_time = timeit.timeit('recursive_F(n, minus_one)', globals=globals(), number=1)
     iterative_time = timeit.timeit('iterative_F(n, minus_one)', globals=globals(), number=1)
