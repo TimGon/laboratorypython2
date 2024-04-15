@@ -42,7 +42,7 @@ def factorial(n):
 
     for i in range(2, n + 1):
 
-        current_cashe = i * prev_cashe
+        current_cashe = (2*i) * prev_cashe
         prev_cashe = current_cashe
 
     return current_cashe
