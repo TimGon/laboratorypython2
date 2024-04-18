@@ -17,7 +17,7 @@ def recursive_F(n, val):
         return 1
     val *= -1
 
-    return val * (2 * (recursive_F(n - 1, val) + recursive_F(n - 3, val))) / factorial(n)
+    return val * (2 * (recursive_F(n - 1, val) + recursive_F(n - 3, val))) / factorial(2*n)
 
 
 def iterative_F(n, val):
@@ -29,26 +29,15 @@ def iterative_F(n, val):
     val *= -1
 
     for i in range(2, n + 1):
-        current = val * (2 * (prev1 + prev2)) / factorial(n)
+        current = val * (2 * (prev1 + prev2)) / factorial(2*n)
         prev2, prev1 = prev1, current
 
     return current
 
-
 def factorial(n):
-    global cashe_prev_fact
-    if n <= 1:
-        return 1
-
-    current_cashe = 0
-
-    for i in range(2, n + 1):
-
-        current_cashe = (2 * i) * ((2 * (i - 1)) * cashe_prev_fact)
-        cashe_prev_fact = current_cashe
-
-    return current_cashe
-
+    if n not in cache:
+        cache[n] = n * factorial(n-1)
+    return cache[n]
 
 n = int(input("Введите натуральное число: "))
 while not (0 < n < 50):
@@ -61,7 +50,7 @@ while not (-1 == minus_one or minus_one == 1):
     print("Это число не является 1 или -1. Повторите ввод.")
     minus_one = int(input("Введите число -1 или 1 "))
 
-cashe_prev_fact = 2
+cache = {0: 0, 1: 1}
 
 for n in range(1, n + 1):
     recursive_time = timeit.timeit('recursive_F(n, minus_one)', globals=globals(), number=1)
