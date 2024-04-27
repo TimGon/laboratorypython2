@@ -28,6 +28,8 @@ def generate_combinations_python(parties, k):
     unique_parties = set([item for sublist in parties for item in sublist])
     result = list(combinations(unique_parties, k))
     return result
+
+
 def generate_combinations_with_age_constraint(parties, k, min_age, combination=[], index=0):
     if k == 0:
         return combination  # Возвращаем комбинацию вместо её вывода
@@ -42,6 +44,18 @@ def generate_combinations_with_age_constraint(parties, k, min_age, combination=[
             result.extend(generate_combinations_with_age_constraint(parties, k - j, min_age,
                                                                     combination + valid_candidates[:j], index + 1))
     return result
+
+
+def get_average_age(age):
+    total_age = 0
+    total_members = 0
+
+    for party in age:
+        for member in party:
+            total_age += member[1]
+            total_members += 1
+
+    return float(total_age / total_members)
 
 parties_age = [
     [("A1", 35), ("A2", 28), ("A3", 31)],
@@ -61,9 +75,7 @@ combinations_algorithmic = generate_combinations(parties, k)
 print("Алгоритмический подход:\n", combinations_algorithmic)
 
 combinations_functional = generate_combinations_python(parties, k)
-print("С использованием функций Python:\n",)
-for combination in combinations_functional:
-    print(combinations_functional)
+print("С использованием функций Python:\n", combinations_functional)
 
 algorithmic_time = timeit.timeit('generate_combinations(parties, k)', globals=globals(), number=1)
 print("Время алгоритма: ", algorithmic_time)
@@ -75,3 +87,10 @@ min_age = int(input("Введите минимальный возраст кан
 print("С ограничением на возраст кандидатов:")
 combinations_with_age = generate_combinations_with_age_constraint(parties_age, k, min_age)
 print(combinations_with_age)
+
+age_aver_parties = get_average_age(parties_age)
+# Выводим средний возраст партий
+print("Средний возраст:", age_aver_parties)
+
+min_commision = min(combinations_functional)
+print("Оптимальная комиссия", min_commision)
