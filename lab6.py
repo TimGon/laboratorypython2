@@ -5,13 +5,13 @@
 
 Вариант 8. В парламентскую комиссию нужно выбрать К членов. Претендентов предоставили N партий. Вывести все возможные варианты комиссии (от каждой партии должно быть от 1 до 3 членов).
 """
-
-import timeit
-from itertools import combinations
-
 """Часть 1:
 Алгоритмический вариант:
 """
+import timeit
+from itertools import combinations
+
+
 def generate_combinations(parties, k, combination=[], all_combinations=[]):
     if len(combination) == k:
         all_combinations.append(combination)
@@ -23,21 +23,14 @@ def generate_combinations(parties, k, combination=[], all_combinations=[]):
                 generate_combinations(parties, k, combination + [candidate], all_combinations)
 
     return all_combinations
-"""
-Функциональный вариант:
-"""
+
 def generate_combinations_python(parties, k):
-    combinations_iter = combinations(parties, k)
-    result = []
-    for combination in combinations_iter:
-        result.append(list(combination))
+    unique_parties = set([item for sublist in parties for item in sublist])
+    result = list(combinations(unique_parties, k))
     return result
-"""Часть 2:
-Ограничение по возрасту:
-"""
 def generate_combinations_with_age_constraint(parties, k, min_age, combination=[], index=0):
     if k == 0:
-        return combination  
+        return combination  # Возвращаем комбинацию вместо её вывода
 
     if index == len(parties):
         return []
@@ -70,7 +63,7 @@ print("Алгоритмический подход:\n", combinations_algorithmic
 combinations_functional = generate_combinations_python(parties, k)
 print("С использованием функций Python:\n",)
 for combination in combinations_functional:
-    print(combination)
+    print(combinations_functional)
 
 algorithmic_time = timeit.timeit('generate_combinations(parties, k)', globals=globals(), number=1)
 print("Время алгоритма: ", algorithmic_time)
