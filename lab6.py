@@ -31,7 +31,7 @@ def generate_combinations_python(parties, k):
     return result
 def generate_combinations_with_age_constraint(parties, k, min_age, combination=[], index=0):
     if k == 0:
-        return combination  # Возвращаем комбинацию вместо её вывода
+        return combination  
 
     if index == len(parties):
         return []
