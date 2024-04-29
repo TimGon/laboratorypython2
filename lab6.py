@@ -62,11 +62,10 @@ k = int(input("Введите количество выбираемых канд
 n = int(input("Введите количество партий: "))
 
 # Создание списка parties для хранения кандидатов каждой партии
-parties = [[] for _ in range(n)]
+parties = []
 parties_age = []
 
 if k < n:
-    parties = []
 
     for i in range(n):
         num_candidates = random.randint(1, 3)
@@ -83,8 +82,8 @@ if k < n:
             party.append(candidate)
         parties_age.append(party)
 
-    print("parties_age =", parties_age, '\n')
-    print(parties)
+    print("Вывод списка партий", parties)
+    print("Вывод список партий с возрастами: ", parties_age, '\n')
 
     combinations_algorithmic = generate_combinations(parties, k)
     print("Алгоритмический подход:\n", combinations_algorithmic)
