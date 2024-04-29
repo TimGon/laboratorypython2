@@ -10,6 +10,7 @@
 """
 import timeit
 from itertools import combinations
+import random
 
 
 def generate_combinations(parties, k, combination=[], all_combinations=[]):
@@ -57,40 +58,56 @@ def get_average_age(age):
 
     return float(total_age / total_members)
 
-parties_age = [
-    [("A1", 35), ("A2", 28), ("A3", 31)],
-    [("B1", 29), ("B2", 32)],
-    [("C1", 30), ("C2", 33), ("C3", 27), ("C4", 34)]
-]
-
-parties = [
-    ["A1", "A2", "A3"],
-    ["B1", "B2"],
-    ["C1", "C2", "C3", "C4"]
-]
-
 k = int(input("Введите количество выбираемых кандидатов: "))
+n = int(input("Введите количество партий: "))
 
-combinations_algorithmic = generate_combinations(parties, k)
-print("Алгоритмический подход:\n", combinations_algorithmic)
+# Создание списка parties для хранения кандидатов каждой партии
+parties = [[] for _ in range(n)]
+parties_age = []
 
-combinations_functional = generate_combinations_python(parties, k)
-print("С использованием функций Python:\n", combinations_functional)
+if k < n:
+    parties = []
 
-algorithmic_time = timeit.timeit('generate_combinations(parties, k)', globals=globals(), number=1)
-print("Время алгоритма: ", algorithmic_time)
+    for i in range(n):
+        num_candidates = random.randint(1, 3)
+        candidates = [f"{chr(97 + i)}{j}" for j in range(1, num_candidates + 1)]
+        parties.append(candidates)
 
-functional_time = timeit.timeit('generate_combinations_python(parties, k)', globals=globals(), number=1)
-print("Время Функционального: ", functional_time)
+    for _ in range(n):
+        num_candidates = random.randint(1, 3)
+        party = []
+        for i in range(num_candidates):
+            name = f"{chr(97 + i)}{random.randint(1, 100)}"
+            age = random.randint(18, 35)
+            candidate = (name, age)
+            party.append(candidate)
+        parties_age.append(party)
 
-min_age = int(input("Введите минимальный возраст кандидатов: "))
-print("С ограничением на возраст кандидатов:")
-combinations_with_age = generate_combinations_with_age_constraint(parties_age, k, min_age)
-print(combinations_with_age)
+    print("parties_age =", parties_age, '\n')
+    print(parties)
 
-age_aver_parties = get_average_age(parties_age)
-# Выводим средний возраст партий
-print("Средний возраст:", age_aver_parties)
+    combinations_algorithmic = generate_combinations(parties, k)
+    print("Алгоритмический подход:\n", combinations_algorithmic)
 
-min_commision = min(combinations_functional)
-print("Оптимальная комиссия", min_commision)
+    combinations_functional = generate_combinations_python(parties, k)
+    print("С использованием функций Python:\n", combinations_functional)
+
+    algorithmic_time = timeit.timeit('generate_combinations(parties, k)', globals=globals(), number=1)
+    print("Время алгоритма: ", algorithmic_time)
+
+    functional_time = timeit.timeit('generate_combinations_python(parties, k)', globals=globals(), number=1)
+    print("Время Функционального: ", functional_time)
+
+    min_age = int(input("Введите минимальный возраст кандидатов: "))
+    print("С ограничением на возраст кандидатов:")
+    combinations_with_age = generate_combinations_with_age_constraint(parties_age, k, min_age)
+    print(combinations_with_age)
+
+    age_aver_parties = get_average_age(parties_age)
+    # Выводим средний возраст партий
+    print("Средний возраст:", age_aver_parties)
+
+    min_commision = min(combinations_functional)
+    print("Оптимальное решение", min_commision)
+else:
+    print("Нет подходящих кандидатов в парламент")
