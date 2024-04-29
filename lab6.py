@@ -51,10 +51,15 @@ def get_average_age(age):
     total_age = 0
     total_members = 0
 
-    for party in age:
-        for member in party:
-            total_age += member[1]
-            total_members += 1
+    for parties in age:
+        party_age = 0
+        party_members = 0
+        for member in parties:
+            party_age += member[1]
+            party_members += 1
+        party_average_age = float(party_age / party_members)
+        total_age += party_average_age
+        total_members += 1
 
     return float(total_age / total_members)
 
