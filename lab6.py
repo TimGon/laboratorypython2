@@ -20,7 +20,9 @@ def generate_combinations(parties, k, combination=[], all_combinations=[]):
 
     for party in parties:
         for candidate in party:
+            # print("Кандидат:",candidate)
             if candidate not in combination:
+                # print("Проходит проверку", candidate)
                 generate_combinations(parties, k, combination + [candidate], all_combinations)
 
     return all_combinations
@@ -42,8 +44,9 @@ def generate_combinations_with_age_constraint(parties, k, min_age, combination=[
     for i in range(1, min(4, k + 1)):
         valid_candidates = [candidate for candidate in parties[index] if candidate[1] >= min_age]
         for j in range(1, min(len(valid_candidates), i) + 1):
-            result.extend(generate_combinations_with_age_constraint(parties, k - j, min_age,
-                                                                    combination + valid_candidates[:j], index + 1))
+            if set(combination + valid_candidates[:j]) not in set(combination):
+                result.extend(generate_combinations_with_age_constraint(parties, k - j, min_age,
+                                                                        combination + valid_candidates[:j], index + 1))
     return result
 
 
@@ -51,15 +54,10 @@ def get_average_age(age):
     total_age = 0
     total_members = 0
 
-    for parties in age:
-        party_age = 0
-        party_members = 0
-        for member in parties:
-            party_age += member[1]
-            party_members += 1
-        party_average_age = float(party_age / party_members)
-        total_age += party_average_age
-        total_members += 1
+    for party in age:
+        for member in party:
+            total_age += member[1]
+            total_members += 1
 
     return float(total_age / total_members)
 
@@ -70,7 +68,7 @@ n = int(input("Введите количество партий: "))
 parties = []
 parties_age = []
 
-if k < n:
+if k > n:
 
     for i in range(n):
         num_candidates = random.randint(1, 3)
@@ -89,29 +87,33 @@ if k < n:
 
     print("Вывод списка партий", parties)
     print("Вывод список партий с возрастами: ", parties_age, '\n')
+    count_candidate = set([item for sublist in parties for item in sublist])
+    count_candidate_age = set([item for sublist in parties_age for item in sublist])
 
-    combinations_algorithmic = generate_combinations(parties, k)
-    print("Алгоритмический подход:\n", combinations_algorithmic)
+    if len(count_candidate) >= k:
+        combinations_algorithmic = generate_combinations(parties, k)
+        print("Алгоритмический подход:\n", combinations_algorithmic)
 
-    combinations_functional = generate_combinations_python(parties, k)
-    print("С использованием функций Python:\n", combinations_functional)
+        combinations_functional = generate_combinations_python(parties, k)
+        print("С использованием функций Python:\n", combinations_functional)
 
-    algorithmic_time = timeit.timeit('generate_combinations(parties, k)', globals=globals(), number=1)
-    print("Время алгоритма: ", algorithmic_time)
+        algorithmic_time = timeit.timeit('generate_combinations(parties, k)', globals=globals(), number=1)
+        print("Время алгоритма: ", algorithmic_time)
 
-    functional_time = timeit.timeit('generate_combinations_python(parties, k)', globals=globals(), number=1)
-    print("Время Функционального: ", functional_time)
+        functional_time = timeit.timeit('generate_combinations_python(parties, k)', globals=globals(), number=1)
+        print("Время Функционального: ", functional_time)
 
-    min_age = int(input("Введите минимальный возраст кандидатов: "))
-    print("С ограничением на возраст кандидатов:")
-    combinations_with_age = generate_combinations_with_age_constraint(parties_age, k, min_age)
-    print(combinations_with_age)
+        min_commision = min(combinations_functional)
+        print("Оптимальное решение", min_commision)
 
-    age_aver_parties = get_average_age(parties_age)
-    # Выводим средний возраст партий
-    print("Средний возраст:", age_aver_parties)
+        min_age = int(input("Введите минимальный возраст кандидатов: "))
 
-    min_commision = min(combinations_functional)
-    print("Оптимальное решение", min_commision)
+        combinations_with_age = generate_combinations_with_age_constraint(parties_age, k, min_age)
+            print("С ограничением на возраст кандидатов:\n", combinations_with_age)
+        age_aver_parties = get_average_age(parties_age)
+        # Выводим средний возраст партий
+        print("Средний возраст:", age_aver_parties)
+    else:
+        print("Мест в парламенте оказалось много, а кандидатов от партий мало. Чтобы исправить это попробуйте ещё раз запустить программу.")
 else:
     print("Нет подходящих кандидатов в парламент")
