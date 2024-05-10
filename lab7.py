@@ -8,19 +8,25 @@ import tkinter as tk
 from tkinter import *
 import random
 
+
 def generate_combinations_with_age_constraint(parties, k, min_age, combination=[], index=0):
     if k == 0:
-        return combination  # Возвращаем комбинацию вместо её вывода
+        return [combination]
 
     if index == len(parties):
         return []
 
     result = []
+    seen = set()
     for i in range(1, min(4, k + 1)):
         valid_candidates = [candidate for candidate in parties[index] if candidate[1] >= min_age]
         for j in range(1, min(len(valid_candidates), i) + 1):
-            result.extend(generate_combinations_with_age_constraint(parties, k - j, min_age,
-                                                                    combination + valid_candidates[:j], index + 1))
+            new_combination = combination + valid_candidates[:j]
+            if tuple(new_combination) not in seen:
+                result.extend(generate_combinations_with_age_constraint(parties, k - j, min_age,
+                                                                        new_combination, index + 1))
+                seen.add(tuple(new_combination))
+
     return result
 
 
@@ -61,47 +67,56 @@ min_age_input = tk.Entry(window)
 min_age_input.grid(row=1, column=1, padx=5, pady=5)
 
 label_title = Label(window, text="Комбинации претендентов парламента:")
-label_title.grid(row=4, column=0, padx=5, pady=5)
+label_title.grid(row=4, column=0, pady=5)
 
 labelt_average_title = Label(window, text="Средний возраст:")
 labelt_average_title.grid(row=6, column=0, padx=5, pady=5)
+
 
 def generate_combinations():
     k = int(k_input.get())
     n = int(n_input.get())
     parties_age = []
-    for _ in range(n):
-        num_candidates = random.randint(1, 3)
-        party = []
-        for i in range(num_candidates):
-            name = f"{chr(97 + i)}{random.randint(1, 100)}"
-            age = random.randint(18, 35)
-            candidate = (name, age)
-            party.append(candidate)
-        parties_age.append(party)
+    if k > n:
+        for _ in range(n):
+            num_candidates = random.randint(1, 3)
+            party = []
+            for i in range(num_candidates):
+                name = f"{chr(97 + i)}{random.randint(1, 100)}"
+                age = random.randint(18, 35)
+                candidate = (name, age)
+                party.append(candidate)
+            parties_age.append(party)
 
-    print("Вывод список партий с возрастами: ", parties_age, '\n')
-    min_age = int(min_age_input.get())
+        print("Вывод список партий с возрастами: ", parties_age, '\n')
+        min_age = int(min_age_input.get())
+        count_candidate_age = set([item for sublist in parties_age for item in sublist])
+        result_text.delete(1.0, tk.END)
+        if len(count_candidate_age) >= k:
+            combinations = generate_combinations_with_age_constraint(
+                parties_age, k, min_age
+            )
 
-    combinations = generate_combinations_with_age_constraint(
-        parties_age, k, min_age
-    )
+            result_average.delete(1.0, tk.END)
 
-    result_text.delete(1.0, tk.END)
-
-    for combination in combinations:
-        result_text.insert(tk.END, f"{combination}\n")
-    result_average.insert(tk.END, f"{get_average_age(parties_age):.2f}")
+            for combination in combinations:
+                result_text.insert(tk.END, f"{combination}\n")
+            result_average.insert(tk.END, f"{get_average_age(parties_age):.2f}")
+        else:
+            result_text.insert(tk.END, f"Мест в парламенте оказалось много, а кандидатов от партий мало.\nЧтобы исправить это попробуйте ввести другие значения/нажмите на кнопку Сгенерировать ещё раз.")
+    else:
+        result_text.delete(1.0, tk.END)
+        result_text.insert(tk.END, "Нет подходящих кандидатов в парламент")
 
 generate_button = tk.Button(window, text="Сгенерировать", command=generate_combinations)
 generate_button.grid(row=3, column=1, padx=5, pady=5)
 
-result_text = tk.Text(window, width=50, height=10, font="Courier 10 bold")
-result_text.grid(row=5, column=0, columnspan=2, padx=5, pady=5)
+result_text = tk.Text(window, width=50, height=10, font="Courier 10 bold", wrap="word")
+result_text.grid(row=5, column=0, columnspan=2, padx=[40, 5], pady=5, sticky='nsew')
 result_average = tk.Text(window, width=10, height=2, font="Courier 10 bold")
-result_average.grid(row=6, column=1, columnspan=1, padx=5, pady=5)
-scrollbar = tk.Scrollbar(window, command=result_text.yview)
-scrollbar.grid(row=5, column=2, sticky='nsew')
+result_average.grid(row=6, column=1, columnspan=1, padx=15, pady=5)
+scrollbar = tk.Scrollbar(window, orient= "vertical", command=result_text.yview)
+scrollbar.grid(row=5, column=1, sticky='nse')
 result_text.config(yscrollcommand=scrollbar.set)
 
 window.geometry(f"+{(window.winfo_screenwidth() - 300) // 2}+{(window.winfo_screenheight() - 300) // 2}")
