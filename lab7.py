@@ -106,7 +106,7 @@ def generate_combinations():
             result_text.insert(tk.END, f"Мест в парламенте оказалось много, а кандидатов от партий мало.\nЧтобы исправить это попробуйте ввести другие значения/нажмите на кнопку Сгенерировать ещё раз.")
     else:
         result_text.delete(1.0, tk.END)
-        result_text.insert(tk.END, "Нет подходящих кандидатов в парламент")
+        result_text.insert(tk.END, "Нет подходящих кандидатов в парламент.\nЧтобы исправить это попробуйте ввести другие значения/нажмите на кнопку Сгенерировать ещё раз")
 
 generate_button = tk.Button(window, text="Сгенерировать", command=generate_combinations)
 generate_button.grid(row=3, column=1, padx=5, pady=5)
