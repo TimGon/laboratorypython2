@@ -79,10 +79,8 @@ class Semicircle:
         item_id = self.canvas.find_closest(event.x, event.y)
         if self.canvas.type(item_id) == "arc":
             selected_semicircle_id = item_id
-            print("Выбранный полукруг:", selected_semicircle_id)
         else:
             selected_semicircle_id = None
-            print("Нет выбранного полукруга")
 
         # Обновление кнопки "Повернуть"
         if selected_semicircle_id is not None:
