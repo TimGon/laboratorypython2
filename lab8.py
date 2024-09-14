@@ -29,7 +29,7 @@ class Semicircle:
         self.y = y
         self.radius = radius
         self.color = color
-        self.semicircle_id = None
+        self.semicircle_cords = None
         self.root = root
         self.angle_entry = angle_entry
         self.rotate_button = rotate_button
@@ -50,25 +50,29 @@ class Semicircle:
                                 Измените координаты.")
                         return
         if self.x and self.y:
-            self.canvas.itemconfig(self.semicircle_id, fill=self.color)
-
-            self.semicircle_id = self.canvas.create_arc(
-                self.x - self.radius,
-                self.y - self.radius,
-                self.x + self.radius,
-                self.y + self.radius,
-                start=0,
-                extent=180,
-                fill=self.color,
-                outline=self.color
-            )
+            self.canvas.itemconfig(self.semicircle_cords, fill=self.color)
+            if self.x > self.radius and self.y > self.radius and is_color_like(self.color):
+                self.semicircle_cords = self.canvas.create_arc(
+                    self.x - self.radius,
+                    self.y - self.radius ,
+                    self.x + self.radius,
+                    self.y + self.radius,
+                    start=0,
+                    extent=180,
+                    fill=self.color,
+                    outline=self.color
+                )
+                semicircles.append(
+                    Semicircle(canvas, int(self.x), int(self.y), int(self.radius), self.color, root, angle_entry, rotate_button,
+                               change_color_button))
+            else:
+                tk.messagebox.showwarning("Предупреждение", "Радиус превышает размеры координат/цвет некорректно введен")
         else:
             tk.messagebox.showwarning("Предупреждение", "Неправильно введены координаты/радиус")
 
     def change_color(self, new_color):
         """Раскраска полукруга."""
         global selected_semicircle_id
-        self.color = new_color
         if is_color_like(new_color):
             self.canvas.itemconfig(selected_semicircle_id, fill=self.color, outline=self.color)
         else:
@@ -77,7 +81,7 @@ class Semicircle:
     def select_semicircle(self, event):
         global selected_semicircle_id
         item_id = self.canvas.find_closest(event.x, event.y)
-        if self.canvas.type(item_id) == "arc":
+        if item_id and self.canvas.type(item_id) == "arc":
             selected_semicircle_id = item_id
         else:
             selected_semicircle_id = None
@@ -108,49 +112,43 @@ class Semicircle:
                 angle = 360
                 tk.messagebox.showwarning("Предупреждение", "Угол установлен в 360 градусов.")
 
-            angle = math.radians(angle)
-            # Получаем координаты центра полукруга
-            center_x = self.x
-            center_y = self.y
+            angle_radian = math.radians(angle)  # Преобразование в радианы
 
-            # Получаем координаты точек полукруга
+            # Получаем координаты полукруга
             points = self.canvas.coords(selected_semicircle_id)
-            new_coords_x = None
-            new_coords_y = None
-            # Поворачиваем каждую точку полукруга
+
+            # Получаем координаты центра полукруга
+            center_x = (points[0] + points[2]) / 2
+            center_y = (points[1] + points[3]) / 2
+
             rotated_points = []
+            # Поворачиваем каждую точку полукруга
             for i in range(0, len(points), 2):
                 x = points[i]
                 y = points[i + 1]
+
                 # Вычисляем новые координаты точки
-                new_x = center_x + (x - center_x) * math.cos(angle) - (y - center_y) * math.sin(angle)
-                new_y = center_y + (x - center_x) * math.sin(angle) + (y - center_y) * math.cos(angle)
-                new_coords_x = new_x
-                new_coords_y = new_y
+                new_x = center_x + (x - center_x) * math.cos(angle_radian) - (y - center_y) * math.sin(angle_radian)
+                new_y = center_y + (x - center_x) * math.sin(angle_radian) + (y - center_y) * math.cos(angle_radian)
                 rotated_points.extend([new_x, new_y])
 
             # Обновляем координаты полукруга на холсте
             self.canvas.coords(selected_semicircle_id, *rotated_points)
 
-            self.check_intersection(new_coords_x, new_coords_y, self.radius)
+            # Проверка пересечения с другими полукругами
+            self.check_intersection(center_x, center_y, self.radius)
         else:
             tk.messagebox.showwarning("Ошибка", "Некорректный угол поворота!")
-            return
 
     def check_intersection(self, x, y, radius):
         """Проверка пересечения с другим полукругом."""
-        distance_squared = (self.x - x) * 2 + (self.y - y) * 2
-        if distance_squared < 0:  # Check for negative value
-            tk.messagebox.showerror("Ошибка", "Недопустимые координаты!")
-            return False
-        distance = math.sqrt(distance_squared)
-        if distance < self.radius + radius:
-            # Меняем цвет полукруга
-            # self.canvas.itemconfig(self.semicircle_id, fill="red")
-            tk.messagebox.showinfo("Пересечение", "Найдено пересечение!")
-            return True
-        else:
-            return False
+        for other_semicircle in semicircles:
+            # Проверяем, что мы не сравниваем полукруг с самим собой
+            if other_semicircle is not self:
+                distance = math.sqrt((other_semicircle.x - x) ** 2 + (other_semicircle.y - y) ** 2)
+                if distance < (other_semicircle.radius + radius):
+                    # Меняем цвет полукруга
+                    other_semicircle.canvas.itemconfig(other_semicircle.semicircle_cords, fill="red")
 
 # Создание основного окна
 root = tk.Tk()
@@ -225,9 +223,13 @@ def load_data(filename):
 def save_data():
     """Сохранение данных в файл."""
     filename = "semicircles.txt"
-    with open(filename, "w") as file:
-        for semicircle in semicircles:
-            file.write(f"{semicircle.x},{semicircle.y},{semicircle.radius},{semicircle.color}\n")
+    if semicircles:
+        with open(filename, "w") as file:
+            for semicircle in semicircles:
+                print("Происходит сохранение:", semicircle.x)
+                file.write(f"{semicircle.x},{semicircle.y},{semicircle.radius},{semicircle.color}\n")
+    else:
+        tk.messagebox.showwarning("Предупреждение", "Нет данных для сохранения.")
 
 # Кнопки
 button_frame = tk.Frame(root)
